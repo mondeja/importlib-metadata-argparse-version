@@ -1,26 +1,175 @@
-[tool.poetry]
+[project]
 name = "importlib-metadata-argparse-version"
-version = "0.1.0"
+version = "1.0.0"
 description = "Argparse action to define CLI version with a delayed call to importlib.metadata"
 readme = "README.md"
-authors = ["Álvaro Mondéjar Rubio <mondejar1994@gmail.com>"]
-license = "BSD-3-License"
+license = "BSD-3-Clause"
+requires-python = ">=3.8"
+authors = [{ name = "Álvaro Mondéjar Rubio", email = "mondejar1994@gmail.com" }]
 repository = "https://github.com/mondeja/importlib-metadata-argparse-version"
 documentation = "https://github.com/mondeja/importlib-metadata-argparse-version#usage"
 classifiers = [
-  "Development Status :: 4 - Beta",
+  "Development Status :: 5 - Production/Stable",
   "Operating System :: OS Independent",
+  "License :: OSI Approved :: BSD License",
   "Intended Audience :: Developers",
   "Topic :: Software Development :: Libraries",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
 ]
-packages = [{ include = "importlib_metadata_argparse_version.py" }]
+keywords = ["argparse", "version", "importlib", "metadata", "performance"]
 
-[tool.poetry.urls]
+[project.urls]
+Source = "https://github.com/mondeja/importlib-metadata-argparse-version"
+Documentation = "https://mondeja.github.io/importlib-metadata-argparse-version"
 "Bug tracker" = "https://github.com/mondeja/importlib-metadata-argparse-version/issues"
+Changelog = "https://github.com/mondeja/importlib-metadata-argparse-version/releases"
 
-[tool.poetry.dependencies]
-python = "^3.7"
-importlib_metadata = { version = "*", python = "<3.8" }
+[tool.hatch.build]
+include = ["/src"]
 
-[tool.poetry.group.test.dependencies]
-pytest = "^7"
+[tool.hatch.build.targets.wheel]
+packages = ["/src/importlib_metadata_argparse_version"]
+
+[tool.hatch.envs.default]
+python = "3.10"
+dependencies = ["mondeja-bump"]
+
+[tool.hatch.envs.style]
+python = "3.10"
+detached = true
+dependencies = ["pre-commit"]
+
+[tool.hatch.envs.style.scripts]
+lint = "pre-commit run -a"
+
+[tool.hatch.envs.tests]
+dependencies = [
+  "pytest~=7.4",
+  "coverage~=6.4",
+  "covdefaults",
+]
+
+[tool.hatch.envs.tests.scripts]
+all = "coverage run -m pytest"
+unit = "coverage run -m pytest tests/test_unit"
+cov = [
+  "hatch run +py=py310 tests:all",
+  "coverage html",
+  "python -c 'import webbrowser as w;w.open(\"http://127.0.0.1:8088\")'",
+  "python -m http.server 8088 -b localhost -d htmlcov"
+]
+
+[[tool.hatch.envs.tests.matrix]]
+python = ["py38", "py39", "py310", "py311", "py312"]
+
+[tool.project-config]
+cache = "2 days"
+style = [
+  "gh://mondeja/project-config-styles@v5.1/python/base.json5",
+  "gh://mondeja/project-config-styles@v5.1/python/mypy.json5",
+]
+
+[tool.coverage.run]
+source = ["src"]
+plugins = ["covdefaults"]
+
+[tool.coverage.report]
+fail_under = 1
+exclude_lines = [
+  "def __repr__\\(",
+  "@(abc\\.)?abstractmethod",
+  "if '-h' in args or '--help' in args:"
+]
+
+[tool.ruff]
+line-length = 80
+target-version = "py38"
+select = [
+  "W",
+  "B",
+  "E",
+  "I",
+  "F",
+  "A",
+  "D",
+  "G",
+  "Q",
+  "PL",
+  "UP",
+  "PT",
+  "C4",
+  "EXE",
+  "ISC",
+  "T20",
+  "INP",
+  "ARG",
+  "SIM",
+  "RET",
+  "FBT",
+  "ERA",
+  "T10",
+  "COM",
+  "SLOT",
+]
+ignore = ["D107"]
+
+[tool.ruff.pydocstyle]
+convention = "google"
+
+[tool.ruff.flake8-quotes]
+inline-quotes = "single"
+multiline-quotes = "single"
+
+[tool.ruff.flake8-pytest-style]
+fixture-parentheses = false
+parametrize-values-type = "tuple"
+parametrize-values-row-type = "tuple"
+
+[tool.ruff.isort]
+lines-after-imports = 2
+combine-as-imports = true
+force-wrap-aliases = true
+known-first-party = ["importlib_metadata_argparse_version"]
+known-local-folder = ["tests"]
+required-imports = ["from __future__ import annotations"]
+extra-standard-library = [
+  "contextvars",
+  "dataclasses",
+  "importlib.resources",
+  "importlib.metadata",
+  "zoneinfo",
+  "graphlib",
+  "tomllib",
+  "wsgiref.types"
+]
+
+[tool.ruff.per-file-ignores]
+"tests/**" = [
+  "I002",
+  "D100",
+  "D101",
+  "D102",
+  "D103",
+  "D104",
+  "D107",
+  "D205",
+  "D415",
+  "INP001",
+  "PLR0913",
+  "PLR2004",
+]
+"setup.py" = ["D205", "INP001", "I002"]
+
+[tool.mypy]
+strict = true
+python_version = "3.11"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

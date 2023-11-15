@@ -1,3 +1,7 @@
+"""Delayed version action for argparse with importlib.metadata support."""
+
+from __future__ import annotations
+
 import argparse
 
 
@@ -11,18 +15,29 @@ class ImportlibMetadataVersionAction(argparse._VersionAction):
     ``--version`` option is passed to the CLI.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(  # type: ignore[no-untyped-def]
+            self,
+            *args,
+            **kwargs,
+    ) -> None:
         try:
             self.importlib_metadata_version_from = kwargs.pop(
-                "importlib_metadata_version_from"
+                'importlib_metadata_version_from',
             )
         except KeyError:
             raise ValueError(
-                "Missing kwarg 'importlib_metadata_version_from' for ImportlibMetadataVersionAction"
-            )
+                "Missing argument 'importlib_metadata_version_from'"
+                " for ImportlibMetadataVersionAction",
+            ) from None
         super().__init__(*args, **kwargs)
 
-    def __call__(self, parser, *args, **kwargs):
+    def __call__(  # type: ignore[no-untyped-def]
+        self,
+        parser: argparse.ArgumentParser,
+        *args,
+        **kwargs,
+    ) -> None:
+        """Executed when the version option is passed to the CLI."""
         version = self.version
         if version is None:
             # prevents default argparse behaviour because version is optional:
@@ -31,25 +46,23 @@ class ImportlibMetadataVersionAction(argparse._VersionAction):
             # if version not passed raises here:
             # AttributeError: 'ArgumentParser' object has no attribute 'version'
             try:
-                version = parser.version
+                version = parser.version  # type: ignore[attr-defined]
             except AttributeError:
                 # use '%(version)s' as default placeholder
-                version = "%(version)s"
-        if "%(version)s" not in version:
+                version = '%(version)s'
+        if '%(version)s' not in version:
             raise ValueError(
-                "Missing '$(version)s' placeholder in ImportlibMetadataVersionAction's"
-                " 'version' kwarg"
+                "Missing '%(version)s' placeholder in"
+                " ImportlibMetadataVersionAction's 'version' argument",
             )
 
-        try:
-            import importlib.metadata as importlib_metadata
-        except ImportError:  # Python < 3.8
-            import importlib_metadata
+        import importlib.metadata as importlib_metadata
 
-        # replacing here avoids `KeyError: 'prog'` when using printf placeholders
+        # replacing here avoids `KeyError: 'prog'` when using printf
+        # placeholders
         #
         # seems safe because argparse uses printf placeholders
-        self.version = version.replace("%(version)s", "{version}").format(
+        self.version = version.replace('%(version)s', '{version}').format(
             version=importlib_metadata.version(
                 self.importlib_metadata_version_from,
             ),
