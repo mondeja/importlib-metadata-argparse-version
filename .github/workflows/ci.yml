@@ -1,62 +1,119 @@
 name: CI
 
 on:
-  workflow_dispatch:
-  pull_request:
   push:
     branches:
       - master
     tags:
       - v*
+  pull_request:
+  workflow_dispatch:
 
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - name: Install dependencies
+        run: pip install -U hatch
+      - name: Lint
+        run: hatch run style:lint
+
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
       matrix:
-        python-version:
-          - '3.7'
-          - '3.8'
-          - '3.9'
-          - '3.10'
+        include:
+          - platform: ubuntu-latest
+            python-version: 3.8
+            py: py38
+          - platform: ubuntu-latest
+            python-version: 3.9
+            py: py39
+          - platform: ubuntu-latest
+            python-version: "3.10"
+            py: py310
+          - platform: ubuntu-latest
+            python-version: "3.11"
+            py: py311
+          - platform: ubuntu-latest
+            python-version: "3.12"
+            py: py312
+          - platform: macos-latest
+            python-version: 3.8
+            py: py38
+          - platform: macos-latest
+            python-version: 3.9
+            py: py39
+          - platform: macos-latest
+            python-version: "3.10"
+            py: py310
+          - platform: macos-latest
+            python-version: "3.11"
+            py: py311
+          - platform: macos-latest
+            python-version: "3.12"
+            py: py312
+          - platform: windows-latest
+            python-version: 3.8
+            py: py38
+          - platform: windows-latest
+            python-version: 3.9
+            py: py39
+          - platform: windows-latest
+            python-version: "3.10"
+            py: py310
+          - platform: windows-latest
+            python-version: "3.11"
+            py: py311
+          - platform: windows-latest
+            python-version: "3.12"
+            py: py312
     steps:
-      - uses: actions/checkout@v3
-      - name: Install poetry
-        run: |
-          pip install -U pip poetry==1.2.0b1
-          pip list
-      - name: Set up Python v${{ matrix.python-version }}
-        uses: actions/setup-python@v3
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-          cache: poetry
-      - name: Install dependencies
-        run: |
-          poetry install --with test
-          poetry show
+      - name: Install Hatch
+        run: pip install -U hatch
       - name: Run tests
-        run: poetry run pytest
+        run: hatch run +py=${{ matrix.py }} tests:all
+      - name: Convert coverage to XML
+        run: |
+          pip install coverage covdefaults
+          coverage xml
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
 
   build-dist:
     if: startsWith(github.ref, 'refs/tags/')
-    needs: test
-    name: Build source distribution
+    needs:
+      - lint
+      - test
+    name: Build package
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Install poetry
-        run: pipx install poetry==1.2.0b1
-      - uses: actions/setup-python@v3
-        name: Install Python v3.x
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        name: Setup Python
         with:
-          python-version: 3.x
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install -U hatch
       - name: Build package
-        run: poetry build
+        run: hatch build
       - uses: actions/upload-artifact@v3
         with:
           path: dist/*
+          name: distribution
 
   pypi-upload:
     name: Upload to PyPI
@@ -65,14 +122,14 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         with:
-          name: artifact
+          name: distribution
           path: dist
-      - uses: pypa/gh-action-pypi-publish@master
+      - uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
           password: ${{ secrets.PYPI_TOKEN }}
           # repository_url: https://test.pypi.org/legacy/
-          skip_existing: true
+          skip-existing: true
 
   release:
     name: Release
@@ -84,7 +141,7 @@ jobs:
         id: tag
         run: |
           TAG_TITLE=${GITHUB_REF#refs/*/}
-          echo ::set-output name=title::$TAG_TITLE
+          echo "title=$TAG_TITLE" >> $GITHUB_OUTPUT
           git -c protocol.version=2 fetch --prune --progress \
             --no-recurse-submodules origin \
             +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
@@ -92,22 +149,20 @@ jobs:
           TAG_BODY="${TAG_BODY//'%'/'%25'}"
           TAG_BODY="${TAG_BODY//$'\n'/'%0A'}"
           TAG_BODY="${TAG_BODY//$'\r'/'%0D'}"
-          echo ::set-output name=body::$TAG_BODY
+          echo "body=$TAG_BODY" >> $GITHUB_OUTPUT
       - name: Create Release
-        uses: actions/create-release@v1.1.4
+        uses: softprops/action-gh-release@v1
         id: create-release
         with:
+          name: ${{ steps.tag.outputs.title }}
           tag_name: ${{ steps.tag.outputs.title }}
-          release_name: ${{ steps.tag.outputs.title }}
           body: ${{ steps.tag.outputs.body }}
           draft: false
           prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/download-artifact@v3
         name: Download builds
         with:
-          name: artifact
+          name: distribution
           path: dist
       - uses: shogo82148/actions-upload-release-asset@v1
         name: Upload release assets
