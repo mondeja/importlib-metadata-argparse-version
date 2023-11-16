@@ -47,7 +47,7 @@ class ImportlibMetadataVersionAction(argparse._VersionAction):
             version = parser.version  # type: ignore[attr-defined]
         except AttributeError:
             # use '%(version)s' as default placeholder
-            version = '%(version)s'
+            version = '%(version)s' if self.version is None else self.version
 
         if '%(version)s' not in version:
             raise ValueError(
