@@ -32,7 +32,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     "-v", "--version",
     action=ImportlibMetadataVersionAction,
-    importlib_metadata_version_from="your-module-name",
+    importlib_metadata_version_from="your-package-name",
 )
 ```
 
@@ -46,7 +46,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     "-v", "--version",
     action="version",
-    version=importlib_metadata.version("your-module-name"),
+    version=importlib_metadata.version("your-package-name"),
 )
 ```
 
@@ -62,7 +62,7 @@ version:
 parser.add_argument(
     "-v", "--version",
     action=ImportlibMetadataVersionAction,
-    importlib_metadata_version_from="your-module-name",
+    importlib_metadata_version_from="your-package-name",
     version="%(prog)s %(version)s",
 )
 
@@ -72,7 +72,7 @@ parser.version = "%(prog)s %(version)s"
 parser.add_argument(
     "-v", "--version",
     action=ImportlibMetadataVersionAction,
-    importlib_metadata_version_from="your-module-name",
+    importlib_metadata_version_from="your-package-name",
 )
 ```
 
@@ -84,7 +84,7 @@ the default value.
 If you forget to define the kwarg `importlib_metadata_version_from`
 in the argument, a `ValueError` will be raised at initialization time.
 Python's [`argparse`] built-in `"version"` action raises an
-`AttributeError` only when you call your program with `--version` when
+`AttributeError` only when you call your program with `--version` if
 you forget to define the `version` kwarg, which is less safer because
 could lead you to pass the error unexpected until you test it.
 And `--version` checking is a really dumb test.

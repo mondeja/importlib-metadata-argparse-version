@@ -1,5 +1,6 @@
 import argparse
 import contextlib
+import importlib.metadata
 import io
 import re
 
@@ -45,14 +46,13 @@ def test_missing_importlib_metadata_version_from():
     with contextlib.redirect_stdout(stdout), pytest.raises(SystemExit):
         parser.parse_args(['-v'])
 
-    import importlib.metadata
     expected_version = importlib.metadata.version(
         'importlib_metadata_argparse_version',
     )
     assert stdout.getvalue() == f'{expected_version}\n'
 
 
-def test_invalid_version_placeholder():
+def test_invalid_version_placeholder_from_parser():
     """Not passing '%(version)s' placeholder for ``version`` at
     ``ArgumentParser`` initialization.
     """
@@ -62,6 +62,28 @@ def test_invalid_version_placeholder():
         '-v',
         action=ImportlibMetadataVersionAction,
         importlib_metadata_version_from='importlib_metadata_argparse_version',
+    )
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "Missing '%(version)s' placeholder in"
+            " ImportlibMetadataVersionAction's 'version' argument",
+        ),
+    ):
+        parser.parse_args(['-v'])
+
+
+def test_invalid_version_placeholder_from_action():
+    """Not passing '%(version)s' placeholder for ``version``
+    at action initialization.
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-v',
+        action=ImportlibMetadataVersionAction,
+        importlib_metadata_version_from='importlib_metadata_argparse_version',
+        version='foo',
     )
 
     with pytest.raises(
