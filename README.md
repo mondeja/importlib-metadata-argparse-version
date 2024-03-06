@@ -15,9 +15,9 @@ is passed.
 When you use `importlib.metadata` for adding the version to a CLI utility,
 you need to import `importlib.metadata` and call
 `importlib.metadata.version("<your-package>")` at initialization time.
-If you only want to execute other part of the CLI
-(eg. like with the argument `--help`), `importlib.metadata` will be imported
-too even when is not needed at all.
+If you only want to execute other parts of the CLI
+(eg. like passing the option `--help`), `importlib.metadata` will be
+imported too even when is not needed at all.
 
 The problem is easily fixed by this module.
 
@@ -32,7 +32,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     "-v", "--version",
     action=ImportlibMetadataVersionAction,
-    importlib_metadata_version_from="your-package-name",
+    version_from="your-package-name",
 )
 ```
 
@@ -62,7 +62,7 @@ version:
 parser.add_argument(
     "-v", "--version",
     action=ImportlibMetadataVersionAction,
-    importlib_metadata_version_from="your-package-name",
+    version_from="your-package-name",
     version="%(prog)s %(version)s",
 )
 
@@ -72,7 +72,7 @@ parser.version = "%(prog)s %(version)s"
 parser.add_argument(
     "-v", "--version",
     action=ImportlibMetadataVersionAction,
-    importlib_metadata_version_from="your-package-name",
+    version_from="your-package-name",
 )
 ```
 
@@ -81,13 +81,12 @@ the default value.
 
 ## For convenience
 
-If you forget to define the kwarg `importlib_metadata_version_from`
+If you forget to define the kwarg `version_from`
 in the argument, a `ValueError` will be raised at initialization time.
 Python's [`argparse`] built-in `"version"` action raises an
-`AttributeError` only when you call your program with `--version` if
-you forget to define the `version` kwarg, which is less safer because
-could lead you to pass the error unexpected until you test it.
-And `--version` checking is a really dumb test.
+`AttributeError` **only when you call your program with `--version`**,
+which is unsafe because could lead you to pass the error unnoticed
+until you test it when you forget to define the `version` kwarg.
 
 [`argparse`]: https://docs.python.org/3/library/argparse.html
 [`importlib.metadata.version`]: https://docs.python.org/3/library/importlib.metadata.html?highlight=importlib%20metadata#distribution-versions

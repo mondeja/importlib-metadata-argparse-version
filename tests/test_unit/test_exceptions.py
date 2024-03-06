@@ -9,7 +9,7 @@ import pytest
 from importlib_metadata_argparse_version import ImportlibMetadataVersionAction
 
 
-def test_missing_importlib_metadata_version_from():
+def test_missing_version_from():
     """This module makes the ``version`` kwarg optional, while argparse
     makes it mandatory, raising an ``AttributeError`` if is not defined.
     """
@@ -24,12 +24,12 @@ def test_missing_importlib_metadata_version_from():
 
     # module behaviour
     parser = argparse.ArgumentParser()
-    #   missing `version` and `importlib_metadata_version_from`:
+    #   missing `version` and `version_from`:
     #   safer as it happens at initialization time
     with pytest.raises(
         ValueError,
         match=(
-            "Missing argument 'importlib_metadata_version_from'"
+            "Missing argument 'version_from'"
             " for ImportlibMetadataVersionAction"
         ),
     ):
@@ -40,7 +40,7 @@ def test_missing_importlib_metadata_version_from():
     parser.add_argument(
         '-v',
         action=ImportlibMetadataVersionAction,
-        importlib_metadata_version_from='importlib_metadata_argparse_version',
+        version_from='importlib_metadata_argparse_version',
     )
     stdout = io.StringIO()
     with contextlib.redirect_stdout(stdout), pytest.raises(SystemExit):
@@ -61,7 +61,7 @@ def test_invalid_version_placeholder_from_parser():
     parser.add_argument(
         '-v',
         action=ImportlibMetadataVersionAction,
-        importlib_metadata_version_from='importlib_metadata_argparse_version',
+        version_from='importlib_metadata_argparse_version',
     )
 
     with pytest.raises(
@@ -82,7 +82,7 @@ def test_invalid_version_placeholder_from_action():
     parser.add_argument(
         '-v',
         action=ImportlibMetadataVersionAction,
-        importlib_metadata_version_from='importlib_metadata_argparse_version',
+        version_from='importlib_metadata_argparse_version',
         version='foo',
     )
 

@@ -15,7 +15,7 @@ def test_custom_version_scheme_from_parser():
     parser.add_argument(
         '-v',
         action=ImportlibMetadataVersionAction,
-        importlib_metadata_version_from='importlib_metadata_argparse_version',
+        version_from='importlib_metadata_argparse_version',
     )
 
     stdout = io.StringIO()
@@ -37,7 +37,7 @@ def test_explicit_version_scheme_from_parser():
     parser.add_argument(
         '-v',
         action=ImportlibMetadataVersionAction,
-        importlib_metadata_version_from='importlib_metadata_argparse_version',
+        version_from='importlib_metadata_argparse_version',
     )
 
     stdout = io.StringIO()
@@ -56,7 +56,7 @@ def test_explicit_version_scheme_from_action():
     parser.add_argument(
         '-v',
         action=ImportlibMetadataVersionAction,
-        importlib_metadata_version_from='importlib_metadata_argparse_version',
+        version_from='importlib_metadata_argparse_version',
         version='%(version)s',
     )
 

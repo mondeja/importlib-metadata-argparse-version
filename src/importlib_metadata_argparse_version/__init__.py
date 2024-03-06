@@ -8,27 +8,25 @@ import argparse
 class ImportlibMetadataVersionAction(argparse._VersionAction):
     """Delayed version action for argparse.
 
-    An action kwarg for argparse.add_argument() which computes
+    An action kwarg for ``argparse.add_argument()`` which evaluates
     the version number only when the version option is passed.
 
-    This allows to import importlib.metadata only when the
+    Allows to import ``importlib.metadata`` only when the
     ``--version`` option is passed to the CLI.
     """
 
     def __init__(  # type: ignore[no-untyped-def]
             self,
             *args,
+            version_from: str = '',
             **kwargs,
     ) -> None:
-        try:
-            self.importlib_metadata_version_from = kwargs.pop(
-                'importlib_metadata_version_from',
-            )
-        except KeyError:
+        if not version_from:
             raise ValueError(
-                "Missing argument 'importlib_metadata_version_from'"
+                "Missing argument 'version_from'"
                 " for ImportlibMetadataVersionAction",
-            ) from None
+            )
+        self.version_from = kwargs.pop('version_from', None)
         super().__init__(*args, **kwargs)
 
     def __call__(  # type: ignore[no-untyped-def]
@@ -38,14 +36,13 @@ class ImportlibMetadataVersionAction(argparse._VersionAction):
         **kwargs,
     ) -> None:
         """Executed when the version option is passed to the CLI."""
-        # prevent default argparse behaviour because version is optional:
-        # https://github.com/python/cpython/blob/86a5e22dfe77558d2e2609c70d1d9e27274a63c0/Lib/argparse.py
+        # prevent default argparse behaviour because version is optional.
         #
-        # if version not passed raises here:
+        # if version not passed it would raises here:
         # AttributeError: 'ArgumentParser' object has no attribute 'version'
-        try:
-            version = parser.version  # type: ignore[attr-defined]
-        except AttributeError:
+        if hasattr(parser, 'version'):
+            version = parser.version
+        else:
             # use '%(version)s' as default placeholder
             version = '%(version)s' if self.version is None else self.version
 
@@ -55,15 +52,15 @@ class ImportlibMetadataVersionAction(argparse._VersionAction):
                 " ImportlibMetadataVersionAction's 'version' argument",
             )
 
-        import importlib.metadata as importlib_metadata
+        import importlib.metadata
 
         # replacing here avoids `KeyError: 'prog'` when using printf
         # placeholders
         #
-        # seems safe because argparse uses printf placeholders
+        # is safe because argparse uses printf placeholders
         self.version = version.replace('%(version)s', '{version}').format(
-            version=importlib_metadata.version(
-                self.importlib_metadata_version_from,
+            version=importlib.metadata.version(
+                self.version_from,
             ),
         )
         super().__call__(parser, *args, **kwargs)

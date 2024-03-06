@@ -16,5 +16,4 @@ venv*/
 .vscode
 .mypy_cache/
 *.so
-
 site/
