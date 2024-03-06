@@ -52,14 +52,14 @@ class ImportlibMetadataVersionAction(_VersionAction):
                 " ImportlibMetadataVersionAction's 'version' argument",
             )
 
-        import importlib.metadata as importlib_metadata
+        import importlib.metadata
 
         # replacing here avoids `KeyError: 'prog'` when using printf
         # placeholders
         #
         # is safe because argparse uses printf placeholders
         self.version = version.replace('%(version)s', '{version}').format(
-            version=importlib_metadata.version(
+            version=importlib.metadata.version(
                 self.version_from,
             ),
         )
