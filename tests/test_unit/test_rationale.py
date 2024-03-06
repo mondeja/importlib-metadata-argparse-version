@@ -21,7 +21,7 @@ def test_rationale_efficient_parser():
     efficient_parser.add_argument(
         '-v',
         action=ImportlibMetadataVersionAction,
-        importlib_metadata_version_from='importlib_metadata_argparse_version',
+        version_from='importlib_metadata_argparse_version',
     )
     assert 'importlib.metadata' not in sys.modules
     # call the parser with the version option
@@ -62,7 +62,7 @@ def test_parsers_version_consistency():
     efficient_parser.add_argument(
         '-v',
         action=ImportlibMetadataVersionAction,
-        importlib_metadata_version_from='importlib_metadata_argparse_version',
+        version_from='importlib_metadata_argparse_version',
     )
 
     stdout = io.StringIO()
