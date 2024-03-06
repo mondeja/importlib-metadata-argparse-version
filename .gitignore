@@ -11,9 +11,6 @@ htmlcov/
 venv*/
 *.whl
 *.tgz
-*.mo
-*.pot
 .vscode
 .mypy_cache/
 *.so
-site/
