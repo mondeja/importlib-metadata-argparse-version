@@ -26,7 +26,7 @@ class ImportlibMetadataVersionAction(_VersionAction):
                 "Missing argument 'version_from'"
                 " for ImportlibMetadataVersionAction",
             )
-        self.version_from = kwargs.pop('version_from', None)
+        self.version_from = version_from
         super().__init__(*args, **kwargs)
 
     def __call__(  # type: ignore[no-untyped-def]
