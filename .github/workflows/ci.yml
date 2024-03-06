@@ -46,9 +46,6 @@ jobs:
           - platform: ubuntu-latest
             python-version: "3.12"
             py: py312
-          - platform: ubuntu-latest
-            python-version: 3.13.0-alpha.4
-            py: py313
           - platform: macos-latest
             python-version: 3.8
             py: py38
@@ -64,9 +61,6 @@ jobs:
           - platform: macos-latest
             python-version: "3.12"
             py: py312
-          - platform: macos-latest
-            python-version: 3.13.0-alpha.4
-            py: py313
           - platform: windows-latest
             python-version: 3.8
             py: py38
@@ -82,9 +76,6 @@ jobs:
           - platform: windows-latest
             python-version: "3.12"
             py: py312
-          - platform: windows-latest
-            python-version: 3.13.0-alpha.4
-            py: py313
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
