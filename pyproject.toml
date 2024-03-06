@@ -1,6 +1,6 @@
 [project]
 name = "importlib-metadata-argparse-version"
-version = "1.0.0"
+version = "2.0.0"
 description = "Argparse action to define CLI version with a delayed call to importlib.metadata"
 readme = "README.md"
 license = "BSD-3-Clause"
