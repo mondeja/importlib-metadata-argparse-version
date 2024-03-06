@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-import argparse
+from argparse import ArgumentParser, _VersionAction
 
 
-class ImportlibMetadataVersionAction(argparse._VersionAction):
+class ImportlibMetadataVersionAction(_VersionAction):
     """Delayed version action for argparse.
 
     An action kwarg for ``argparse.add_argument()`` which evaluates
@@ -31,7 +31,7 @@ class ImportlibMetadataVersionAction(argparse._VersionAction):
 
     def __call__(  # type: ignore[no-untyped-def]
         self,
-        parser: argparse.ArgumentParser,
+        parser: ArgumentParser,
         *args,
         **kwargs,
     ) -> None:
@@ -52,14 +52,14 @@ class ImportlibMetadataVersionAction(argparse._VersionAction):
                 " ImportlibMetadataVersionAction's 'version' argument",
             )
 
-        import importlib.metadata
+        import importlib.metadata as importlib_metadata
 
         # replacing here avoids `KeyError: 'prog'` when using printf
         # placeholders
         #
         # is safe because argparse uses printf placeholders
         self.version = version.replace('%(version)s', '{version}').format(
-            version=importlib.metadata.version(
+            version=importlib_metadata.version(
                 self.version_from,
             ),
         )
