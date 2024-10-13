@@ -1,6 +1,6 @@
 [project]
 name = "importlib-metadata-argparse-version"
-version = "2.0.0"
+version = "2.0.1"
 description = "Argparse action to define CLI version with a delayed call to importlib.metadata"
 readme = "README.md"
 license = "BSD-3-Clause"
@@ -25,7 +25,7 @@ keywords = ["argparse", "version", "importlib", "metadata", "performance", "cli"
 
 [project.urls]
 Source = "https://github.com/mondeja/importlib-metadata-argparse-version"
-Documentation = "https://mondeja.github.io/importlib-metadata-argparse-version"
+Documentation = "https://github.com/mondeja/importlib-metadata-argparse-version?tab=readme-ov-file#usage"
 "Bug tracker" = "https://github.com/mondeja/importlib-metadata-argparse-version/issues"
 Changelog = "https://github.com/mondeja/importlib-metadata-argparse-version/releases"
 
@@ -69,8 +69,8 @@ python = ["py38", "py39", "py310", "py311", "py312", "py313"]
 [tool.project-config]
 cache = "2 days"
 style = [
-  "gh://mondeja/project-config-styles@v5.2/python/base.json5",
-  "gh://mondeja/project-config-styles@v5.2/python/mypy.json5",
+  "gh://mondeja/project-config-styles@v5.4/python/base.json5",
+  "gh://mondeja/project-config-styles@v5.4/python/mypy.json5",
 ]
 
 [tool.coverage.run]

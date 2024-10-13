@@ -14,3 +14,4 @@ venv*/
 .vscode
 .mypy_cache/
 *.so
+.prettier-cache
