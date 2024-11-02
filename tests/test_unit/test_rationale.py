@@ -1,7 +1,6 @@
 import argparse
 import contextlib
 import io
-import re
 import sys
 
 import pytest
@@ -97,10 +96,10 @@ def test_rationale_efficient_parser_infer_version_from():
     )
     assert 'importlib.metadata' not in sys.modules
     # call the parser with the version option
-    with pytest.raises(ValueError, match=re.escape(
+    with pytest.raises(ValueError, match=(
         "Argument 'version_from' for ImportlibMetadataVersionAction is missing"
         " and inferred package name from caller module 'test_rationale' could"
-        " not be found",
+        " not be found"
     )):
         efficient_parser.parse_args(['-v'])
     assert 'importlib.metadata' in sys.modules
