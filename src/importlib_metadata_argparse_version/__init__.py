@@ -50,21 +50,17 @@ class ImportlibMetadataVersionAction(_VersionAction):
                     # from __package__
                     package = getattr(module, '__package__', None)
                     if package is None:
-                        package = ''
+                        # from __file__
+                        mfname = getattr(module, '__file__', None)
+                        if mfname is None:
+                            break
+                        fname = os.path.basename(mfname).removesuffix('.py')
+                        if fname not in ('__init__', '__main__'):
+                            version_from = fname
+                            setattr(self, '__version_from_inferred', True)
                     else:
                         setattr(self, '__version_from_inferred', True)
                         version_from = package
-                        break
-                    # from __file__
-                    mfname = getattr(module, '__file__', None)
-                    if mfname is None:
-                        setattr(self, '__version_from_inferred', True)
-                        version_from = package
-                        break
-                    fname = os.path.basename(mfname).removesuffix('.py')
-                    if fname not in ('__init__', '__main__'):
-                        version_from = fname
-                        setattr(self, '__version_from_inferred', True)
                     break
 
         if not version_from:
