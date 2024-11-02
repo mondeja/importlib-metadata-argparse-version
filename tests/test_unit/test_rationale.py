@@ -1,6 +1,7 @@
 import argparse
 import contextlib
 import io
+import re
 import sys
 
 import pytest
@@ -55,7 +56,8 @@ def test_parsers_version_consistency():
         '-v',
         action='version',
         version=importlib.metadata.version(
-            'importlib_metadata_argparse_version'),
+            'importlib_metadata_argparse_version',
+        ),
     )
 
     efficient_parser = argparse.ArgumentParser()
@@ -77,3 +79,28 @@ def test_parsers_version_consistency():
         vers for vers in stdout.getvalue().split('\n') if vers
     )
     assert efficient_version == unefficient_version
+
+
+def test_rationale_efficient_parser_infer_version_from():
+    """Assert that this module avoids to import ``importlib.metadata``
+    until a ``--version`` option is passed to the CLI.
+    """
+    if 'importlib.metadata' in sys.modules:
+        del sys.modules['importlib.metadata']
+    assert 'importlib.metadata' not in sys.modules
+
+    # create a parser with the efficient version action
+    efficient_parser = argparse.ArgumentParser()
+    efficient_parser.add_argument(
+        '-v',
+        action=ImportlibMetadataVersionAction,
+    )
+    assert 'importlib.metadata' not in sys.modules
+    # call the parser with the version option
+    with pytest.raises(ValueError, match=re.escape(
+        "Argument 'version_from' for ImportlibMetadataVersionAction is missing"
+        " and inferred package name from caller module 'test_rationale' could"
+        " not be found",
+    )):
+        efficient_parser.parse_args(['-v'])
+    assert 'importlib.metadata' in sys.modules
