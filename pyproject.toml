@@ -1,10 +1,10 @@
 [project]
 name = "importlib-metadata-argparse-version"
-version = "2.1.0"
+version = "3.0.0"
 description = "Argparse action to define CLI version with a delayed call to importlib.metadata"
 readme = "README.md"
 license = "BSD-3-Clause"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 authors = [{ name = "Álvaro Mondéjar Rubio", email = "mondejar1994@gmail.com" }]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
@@ -14,7 +14,6 @@ classifiers = [
   "Topic :: Software Development :: Libraries",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -64,7 +63,7 @@ cov = [
 ]
 
 [[tool.hatch.envs.tests.matrix]]
-python = ["py38", "py39", "py310", "py311", "py312", "py313"]
+python = ["py39", "py310", "py311", "py312", "py313"]
 
 [tool.project-config]
 cache = "2 days"
@@ -87,7 +86,7 @@ exclude_lines = [
 
 [tool.ruff]
 line-length = 80
-target-version = "py38"
+target-version = "py39"
 
 [tool.ruff.lint]
 select = [
