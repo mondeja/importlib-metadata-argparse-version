@@ -49,10 +49,10 @@ def test_missing_version_from_importlib_metadata():
     parser.add_argument('-v', action=ImportlibMetadataVersionAction)
     with pytest.raises(
         ValueError,
-        match=re.escape(
+        match=(
             "Argument 'version_from' for ImportlibMetadataVersionAction is"
             " missing and inferred package name from caller module"
-            " 'test_exceptions' could not be found",
+            " 'test_exceptions' could not be found"
         ),
     ):
         parser.parse_args(['-v'])
@@ -67,7 +67,7 @@ def test_invalid_package_version_from():
     )
     with pytest.raises(
         importlib.metadata.PackageNotFoundError,
-        match=re.escape('non_existent_package'),
+        match='non_existent_package',
     ):
         parser.parse_args(['-v'])
 
