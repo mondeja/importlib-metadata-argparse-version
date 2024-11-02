@@ -79,14 +79,26 @@ parser.add_argument(
 And the `version` kwarg becomes optional, being `"%(version)s"`
 the default value.
 
+### Infer package name
+
+The argument `version_from` can be ommitted and the package name
+will be inferred from the caller package location:
+
+```python
+parser.add_argument(
+    "-v", "--version",
+    action=ImportlibMetadataVersionAction,
+)
+```
+
 ## For convenience
 
-If you forget to define the kwarg `version_from`
-in the argument, a `ValueError` will be raised at initialization time.
-Python's [`argparse`] built-in `"version"` action raises an
-`AttributeError` **only when you call your program with `--version`**,
-which is unsafe because could lead you to pass the error unnoticed
-until you test it when you forget to define the `version` kwarg.
+If you forget to define the kwarg `version_from` in the argument or the
+inferred package name is not found, an exception will be raised at
+initialization time. Python's [`argparse`] built-in `"version"` action raises
+an `AttributeError` **only when you call your program with `--version`**, which
+is unsafe because could lead you to forget to define the `version` passing
+the error unnoticed until you test it manually.
 
 [`argparse`]: https://docs.python.org/3/library/argparse.html
 [`importlib.metadata.version`]: https://docs.python.org/3/library/importlib.metadata.html?highlight=importlib%20metadata#distribution-versions
